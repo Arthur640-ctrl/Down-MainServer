@@ -1,0 +1,23 @@
+{
+  "name": "down-gameserver",
+  "version": "1.0.0",
+  "description": "Backend server for the video game DOWN.",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon index.js",
+    "start": "node index.js",
+    "test": "echo \"No tests yet.\" && exit 0"
+  },
+  "author": "Arthur Merienne",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.10.0",
+    "bcrypt": "^6.0.0",
+    "express": "^5.1.0",
+    "firebase-admin": "^13.4.0",
+    "uuid": "^11.1.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}
