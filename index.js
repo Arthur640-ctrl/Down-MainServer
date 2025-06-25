@@ -1,7 +1,14 @@
 // Intitalise l'API
 const express = require('express')
-const port = process.env.PORT || 5000
 const app = express()
+
+// Load la config via le fichier Utils.js
+const { loadConfig } = require('./utils/Utils');
+const config = loadConfig();
+
+
+// Load du port depuis la config
+const port = process.env.PORT || config.server.apiPort
 
 // Middleware pour pouvoir recupérer les données JSON dans les requêtes
 app.use(express.json())

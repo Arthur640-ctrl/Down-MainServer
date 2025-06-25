@@ -1,0 +1,24 @@
+config:
+  serverName: ""
+  paths:
+    database: "config/firebase.json"
+
+server:
+  host: "0.0.0.0"
+  apiPort: 5000
+
+dbSettings:
+  queueDbCollection: "queue"
+  gamesDbCollection: "games"
+  usersDbCollection: "users"
+  sessionsDbCollection: "sessions"
+
+nodes:
+  node1:
+    ip: "125.124.12.45"
+    apiPort: "1245"
+    continentLocation: "EU"
+  node2:
+    ip: "125.124.12.45"
+    apiPort: "1245"
+    continentLocation: "AM"
