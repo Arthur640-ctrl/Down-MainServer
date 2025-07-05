@@ -2,12 +2,14 @@ const express = require('express')
 const bcrypt = require('bcrypt')
 const { v4: uuidv4 } = require('uuid')
 const axios = require('axios')
+const { loadConfig } = require('../utils/Utils')
+const config = loadConfig()
+const { playerHasAuthorisation, adminHasAuthorisation } = require('../utils/routesUtils')
 
 const router = express.Router()
 
 const admin = require('../config/firebase_init.js')
 const db = admin.firestore()
-
 
 router.post('/', async (req, res) => {
     const email = req.body.email
@@ -57,6 +59,23 @@ router.post('/', async (req, res) => {
 
 
     res.status(200).json({message: "Login successful", token: newToken})
+})
+
+router.post('/is_admin', async (req, res) => {
+    const userEmail = req.body.email
+    const userToken = req.body.token
+
+    if (!userEmail || !userToken) {
+        return res.status(400).json({message: "Email and token are required"})
+    }
+
+    const isAdmin = await adminHasAuthorisation(userEmail, userToken)
+
+    if (isAdmin !== true) {
+        return res.status(403).json({message: isAdmin})
+    }
+
+    res.status(200).json({message: "User is an admin"})
 })
 
 module.exports = router

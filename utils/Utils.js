@@ -1,6 +1,6 @@
 const fs = require('fs')
 const yaml = require('yaml')
-const path = require('path');
+const path = require('path')
 
 function loadConfig() {
     const filePath = path.resolve(__dirname, '../config/config.yaml')
