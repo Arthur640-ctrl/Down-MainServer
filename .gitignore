@@ -1,0 +1,5 @@
+config/firebase.json
+node_modules/
+.env
+config/config.yaml
+

@@ -1,0 +1,4 @@
+Game mode id :
+- 000 = Non assigné
+- 001 = Melé
+- 002 = Controle de zone
