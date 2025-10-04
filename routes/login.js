@@ -18,8 +18,13 @@ router.post('/', async (req, res) => {
     const password = req.body.password
     const ip = req.ip
 
-    // Search user
-    const userSearch = await db.collection('users').where('email', '==', email).limit(1).get()
+    var userSearch = null
+
+    if (isEmail(email)) {
+        userSearch = await db.collection('users').where('email', '==', email).limit(1).get()
+    } else {
+        userSearch = await db.collection('users').where('pseudo', '==', email).limit(1).get()
+    }
 
     if (userSearch.empty) {
       return res.status(404).json({message: 'User not found'})
@@ -85,20 +90,24 @@ router.post('/', async (req, res) => {
         return res.status(403).json({message: `Unable to verify your information ${error}`})
     }
 
+    const now = new Date()
+
     const nowIso = new Date().toISOString()
+    
+    const expirationDate = new Date(now.getTime() + 60 * 60 * 1000)
+    const expirationIso = expirationDate.toISOString();
 
     const newSession = {
+        "expiration": expirationIso,
         "ip": ip,
         "user_agent": null,
         "token": newToken,
-        "connected_at": nowIso,
+        "connected_at": now.toISOString(),
         "location": locationResponseData
     }
 
     await db.collection('sessions').doc(userData.account_id).set({
-        latest_token: newToken,
-        latest_login: admin.firestore.FieldValue.serverTimestamp(),
-        historique: admin.firestore.FieldValue.arrayUnion(newSession)
+        sessions: admin.firestore.FieldValue.arrayUnion(newSession)
     }, { merge: true })
 
 
@@ -142,3 +151,8 @@ function isSuspended(userData) {
 }
 
 module.exports = router
+
+function isEmail(str) {
+  // Regex basique pour email
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(str)
+}

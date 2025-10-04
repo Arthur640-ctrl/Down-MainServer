@@ -32,11 +32,9 @@ router.get('/home/infos', async (req, res) => {
         accounts: accountCreated,
         duelsPlayed: infos.websiteStats.duelsPlayed,
         onlineGames: infos.websiteStats.onlineGame,
-        infrastructureInfos: infos.statuts
     }
 
     res.status(200).json({message: response})
 })
-
 
 module.exports = router

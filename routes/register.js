@@ -13,7 +13,6 @@ router.post('/', async (req, res) => {
     const email = req.body.email
     const password = req.body.password
     const pseudo = req.body.pseudo
-
     const birth = req.body.dob
 
     if (!email || !regexEmail.test(email)) {
