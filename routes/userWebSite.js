@@ -17,7 +17,6 @@ router.get('/', async (req, res) => {
 })
 
 router.get('/home/infos', async (req, res) => {
-    console.log("oubt")
     const infos = loadConfig()
 
     var accountCreated = "N/A"
@@ -33,28 +32,9 @@ router.get('/home/infos', async (req, res) => {
         accounts: accountCreated,
         duelsPlayed: infos.websiteStats.duelsPlayed,
         onlineGames: infos.websiteStats.onlineGame,
-        infrastructureInfos: infos.statuts
     }
-
-    const dbPing = await get_db_ping()
-    console.log(dbPing)
-
-    response.infrastructureInfos.services.db.other = dbPing
 
     res.status(200).json({message: response})
 })
-
-async function get_db_ping() {
-    const start = Date.now()
-    try {
-        // Lecture d'un document "ping" (crée-le une fois dans Firestore)
-        await db.collection('ping').doc('ping').get()
-        const duration = Date.now() - start
-        return `${duration}ms`
-    } catch (err) {
-        const duration = Date.now() - start
-        return "Hors-ligne"
-    }
-}
 
 module.exports = router

@@ -17,8 +17,11 @@ const config = loadConfig()
 
 const { startBot } = require("./discord-bot/bot")
 
+const { playerHasAuthorisation, adminHasAuthorisation } = require('D:/Autres/Code/Down/Down-MainServer/utils/routesUtils.js')
+
 // Load du port depuis la config
 const port = process.env.PORT || config.server.apiPort
+const ip = config.server.host
 
 // Middleware pour pouvoir recupérer les données JSON dans les requêtes
 app.use(express.json())
@@ -48,9 +51,13 @@ app.use('/user', user)
 const userWebSite = require('./routes/userWebSite')
 app.use('/website', userWebSite)
 
+// Utils Road
+const utilsRoad = require('./routes/utilsRoads.js')
+app.use('/utils', utilsRoad)
+
 // Other
 app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`)
+  console.log(`Server is running on http://${ip}:${port}`)
 })
 
 startBot()
