@@ -3,7 +3,7 @@ const db = admin.firestore()
 const { loadConfig } = require('./Utils')
 const config = loadConfig()
 
-async function playerHasAuthorisation(userId, userToken) {
+async function playerHasAuthorisation(userId, userToken, agent = null) {
     const userSearch = await db
         .collection(config.dbSettings.usersDbCollection)
         .where('account_id', '==', userId)
@@ -44,8 +44,12 @@ async function playerHasAuthorisation(userId, userToken) {
     // Vérifier si le token fourni est encore valide
     for (const session of validSessions) {
         if (session.token === userToken) {
-            console.log("✅ Session trouvée et valide")
-            return true;
+            if (agent != null || session.agent === agent) {
+                return true
+            } else {
+                return true
+            }
+
         }
     }
 
@@ -83,9 +87,41 @@ async function adminHasAuthorisation(userEmail, userToken) {
     return true
 }
 
-module.exports = {
-  playerHasAuthorisation,
-  adminHasAuthorisation
+async function playerExists(playerId) {
+    const usersRef = db.collection('users')
+    const snapshot = await usersRef.where('account_id', '==', playerId).get()
+
+    if (snapshot.empty) {
+        return false
+    }
+    
+    return true
+}
+
+async function getPlayerDoc(playerId, collectionName) {
+    if (collectionName === "users") {
+        const ref = db.collection(collectionName)
+        const snapshot = await ref.where('account_id', '==', playerId).get()
+
+        if (snapshot.empty) {
+            return null
+        }
+
+        const doc = snapshot.docs[0]
+        return { id: doc.id, ...doc.data() }
+
+    } else if (collectionName === "sessions") {
+        const docRef = db.collection('sessions').doc(playerId)
+        const doc = await docRef.get()
+
+        if (!doc.exists) {
+            return null
+        } else {
+            return doc.data()
+        }
+
+    }
+    
 }
 
 function isSessionExpired(expiration) {
@@ -96,3 +132,37 @@ function isSessionExpired(expiration) {
     // Si maintenant > expiration => expirée
     return now > expireDate
 }
+
+async function playerGameHasAuthorisation(userId, userToken) {
+    try {
+        // Récupère le doc dont l'ID est playerId
+        const docRef = db.collection('sessions').doc(userId)
+        const doc = await docRef.get()
+
+        if (!doc.exists) {
+            return null
+        }
+
+        const docData = doc.data()
+        const gameSession = docData.game_session
+
+        if (userToken === gameSession.token) {
+            return true
+        } else {
+            return false
+        }
+
+    } catch (error) {
+        return null
+    }
+}
+
+module.exports = {
+  playerHasAuthorisation,
+  adminHasAuthorisation,
+  playerExists,
+  getPlayerDoc,
+  isSessionExpired,
+  playerGameHasAuthorisation
+}
+

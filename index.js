@@ -18,7 +18,7 @@ const config = loadConfig()
 const { startBot } = require("./discord-bot/bot")
 
 
-const { playerHasAuthorisation, adminHasAuthorisation } = require('D:/Autres/Code/Down/Down-MainServer/utils/routesUtils.js')
+const { playerHasAuthorisation, adminHasAuthorisation } = require('./utils/routesUtils.js')
 
 // Load du port depuis la config
 const port = process.env.PORT || config.server.apiPort
@@ -55,6 +55,15 @@ app.use('/website', userWebSite)
 // Utils Road
 const utilsRoad = require('./routes/utilsRoads.js')
 app.use('/utils', utilsRoad)
+
+// Start Game
+const startGame = require('./routes/startGame.js')
+app.use('/game/start', startGame)
+
+// Matchmaking 
+const matchmaking = require('./routes/matchmaking.js')
+app.use('/matchmaking', matchmaking)
+
 
 // Other
 app.listen(port, () => {

@@ -17,6 +17,7 @@ router.post('/', async (req, res) => {
     const email = req.body.email
     const password = req.body.password
     const ip = req.ip
+    const agent = req.body.agent
 
     var userSearch = null
 
@@ -28,6 +29,11 @@ router.post('/', async (req, res) => {
 
     if (userSearch.empty) {
       return res.status(404).json({message: 'User not found'})
+    }
+
+    const allAgent = ["website", "luncher"]
+    if (!allAgent.includes(agent)) {
+        return res.status(403).json({message: "Agent not authorized"})
     }
 
     // Get user data
@@ -100,7 +106,7 @@ router.post('/', async (req, res) => {
     const newSession = {
         "expiration": expirationIso,
         "ip": ip,
-        "user_agent": null,
+        "user_agent": agent,
         "token": newToken,
         "connected_at": now.toISOString(),
         "location": locationResponseData
@@ -153,6 +159,5 @@ function isSuspended(userData) {
 module.exports = router
 
 function isEmail(str) {
-  // Regex basique pour email
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(str)
 }
