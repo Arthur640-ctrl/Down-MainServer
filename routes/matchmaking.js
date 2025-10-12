@@ -66,7 +66,7 @@ router.post('/get', async (req, res) =>  {
 
     const result = await matchmaking.getPlayerState(playerId, 'EU', gameMode)
 
-    res.status(200).json({message: result})
+    res.status(200).json(result)
 })
 
 

@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Backend server for the video game DOWN.",
   "main": "index.js",
+  "type": "commonjs",
   "scripts": {
     "dev": "nodemon index.js",
     "start": "node index.js",
@@ -12,7 +13,7 @@
   "license": "MIT",
   "dependencies": {
     "@discordjs/rest": "^2.5.1",
-    "axios": "^1.10.0",
+    "axios": "^1.12.2",
     "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
     "discord.js": "^14.21.0",

@@ -10,10 +10,18 @@ async function addPlayerToMode(playerId, region, gameMode) {
 
     const now = new Date()
     
+    const playerDoc = await getPlayerDoc(player.id, "users")
+    const sessionDoc = await getPlayerDoc(player.id, "sessions")
+
     const matchmakingInfos = {
+        
         id: playerId,
         join_at: now.toISOString(),
-        state: 1 
+        state: 1,
+        game: null,
+        token: sessionDoc.game_session.token,
+        pseudo: playerDoc.pseudo,
+        id: playerDoc.account_id
     }
 
     const collectionName = `mm-${formatNumber(gameMode)}-${region}`
@@ -47,8 +55,18 @@ async function getPlayerState(playerId, region, gameMode) {
     
     const playerDoc = await db.collection(collectionName).doc(playerId).get()
     const playerData = playerDoc.data()
-    return playerData.state
 
+    if (playerData.state != 3) {
+        return {message: "Processing...", state: playerData.state}
+    } else if (playerData.state == 3) {
+        const gameDoc = await db.collection("games").doc(playerData.game).get()
+        const gameData = gameDoc.data()
+
+        const playerRef = db.collection(collectionName).doc(playerId)
+        await playerRef.delete()
+
+        return {message: "Can connect !", ip: gameData.ip, port: gameData.port}
+    }
 }
 
 module.exports = {
@@ -60,6 +78,6 @@ module.exports = {
 // | État | Nom (exemple) | Description                                 | Texte affiché au joueur                          |
 // | ---- | ------------- | ------------------------------------------- | ------------------------------------------------ |
 // | 1    | `SEARCHING`   | Le joueur est dans la file d’attente.       | « Recherche d’une partie en cours… »             |
-// | 2    | `MATCH_FOUND` | Une partie a été trouvée.                   | « Partie trouvée ! Connexion en cours… »         |
-// | 3    | `IN_GAME`     | Le joueur est en jeu.                       | « En partie »                                    |
+// | 2    | `MATCH_FOUND` | Une partie a été trouvée.                   | « Partie trouvée ! Preparation… »                |
+// | 3    | `CAN_CONNECT` | Le joueur peu se connecter                  | « Connexion... »                                 |
 // | 4    | `ERROR`       | Une erreur s’est produite (timeout, etc.).  | « Erreur : impossible de rejoindre une partie. » |
